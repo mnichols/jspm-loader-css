@@ -77,18 +77,14 @@ You can customize this loader to meet your needs.
 2. In the `css.js` file, include whatever postcss plugins you need:
 
   ```js
-	import { CSSLoader, Plugins } from 'jspm-loader-css'
-	import vars from 'postcss-simple-vars' // you want to use this postcss plugin
-	
-  const {fetch, bundle} = new CSSLoader([
-    vars,
-    Plugins.localByDefault,
-    Plugins.extractImports,
-    Plugins.scope,
+  import { CSSLoader, Plugins, fetch, bundle } from 'jspm-loader-css';
+  
+  const loader = new CSSLoader([
     Plugins.autoprefixer()
   ], __moduleName);
   
-  export {fetch, bundle};
+  export default loader;
+  export { CSSLoader, Plugins, fetch, bundle };
 	``` 
 	
 	Just make sure you have `Plugins.autoprefixer` passed to `new CSSLoader`, it's required.
