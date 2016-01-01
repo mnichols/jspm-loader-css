@@ -1,3 +1,4 @@
+/* */ 
 "format global";
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.autoprefixer = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
 (function() {
@@ -720,7 +721,7 @@
     };
 
     Declaration.prototype.needCascade = function(decl) {
-      return decl._autoprefixerCascade || (decl._autoprefixerCascade = this.all.options.cascade !== false && decl.style('before').indexOf('\n') !== -1);
+      return decl._autoprefixerCascade || (decl._autoprefixerCascade = this.all.options.cascade !== false && decl.raw('before').indexOf('\n') !== -1);
     };
 
     Declaration.prototype.maxPrefixed = function(prefixes, decl) {
@@ -744,7 +745,7 @@
       if (prefix == null) {
         prefix = '';
       }
-      before = decl.style('before');
+      before = decl.raw('before');
       max = this.maxPrefixed(prefixes, decl);
       diff = max - utils.removeNote(prefix).length;
       for (i = j = 0, ref = diff; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
@@ -755,18 +756,18 @@
 
     Declaration.prototype.restoreBefore = function(decl) {
       var lines, min;
-      lines = decl.style('before').split("\n");
+      lines = decl.raw('before').split("\n");
       min = lines[lines.length - 1];
       this.all.group(decl).up(function(prefixed) {
         var array, last;
-        array = prefixed.style('before').split("\n");
+        array = prefixed.raw('before').split("\n");
         last = array[array.length - 1];
         if (last.length < min.length) {
           return min = last;
         }
       });
       lines[lines.length - 1] = min;
-      return decl.before = lines.join("\n");
+      return decl.raws.before = lines.join("\n");
     };
 
     Declaration.prototype.insert = function(decl, prefix, prefixes) {
@@ -776,7 +777,7 @@
         return;
       }
       if (this.needCascade(decl)) {
-        cloned.before = this.calcBefore(prefixes, decl, prefix);
+        cloned.raws.before = this.calcBefore(prefixes, decl, prefix);
       }
       return decl.parent.insertBefore(decl, cloned);
     };
@@ -802,7 +803,7 @@
         prefixes = Declaration.__super__.process.apply(this, arguments);
         if (prefixes != null ? prefixes.length : void 0) {
           this.restoreBefore(decl);
-          return decl.before = this.calcBefore(prefixes, decl);
+          return decl.raws.before = this.calcBefore(prefixes, decl);
         }
       } else {
         return Declaration.__super__.process.apply(this, arguments);
@@ -1544,14 +1545,14 @@
         cloned.prop = prefix + 'box-orient';
         cloned.value = orient;
         if (this.needCascade(decl)) {
-          cloned.before = this.calcBefore(prefixes, decl, prefix);
+          cloned.raws.before = this.calcBefore(prefixes, decl, prefix);
         }
         decl.parent.insertBefore(decl, cloned);
         cloned = this.clone(decl);
         cloned.prop = prefix + 'box-direction';
         cloned.value = dir;
         if (this.needCascade(decl)) {
-          cloned.before = this.calcBefore(prefixes, decl, prefix);
+          cloned.raws.before = this.calcBefore(prefixes, decl, prefix);
         }
         return decl.parent.insertBefore(decl, cloned);
       } else {
@@ -3265,7 +3266,7 @@
       keyframes = this.prefixes.add['@keyframes'];
       viewport = this.prefixes.add['@viewport'];
       supports = this.prefixes.add['@supports'];
-      css.eachAtRule((function(_this) {
+      css.walkAtRules((function(_this) {
         return function(rule) {
           if (rule.name === 'keyframes') {
             if (!_this.disabled(rule)) {
@@ -3286,7 +3287,7 @@
           }
         };
       })(this));
-      css.eachRule((function(_this) {
+      css.walkRules((function(_this) {
         return function(rule) {
           var j, len, ref, results, selector;
           if (_this.disabled(rule)) {
@@ -3301,7 +3302,7 @@
           return results;
         };
       })(this));
-      css.eachDecl((function(_this) {
+      css.walkDecls((function(_this) {
         return function(decl) {
           var prefix;
           if (decl.prop === 'display' && decl.value === 'box') {
@@ -3318,7 +3319,7 @@
           }
         };
       })(this));
-      return css.eachDecl((function(_this) {
+      return css.walkDecls((function(_this) {
         return function(decl) {
           var j, len, ref, unprefixed, value;
           if (_this.disabled(decl)) {
@@ -3338,7 +3339,7 @@
     Processor.prototype.remove = function(css) {
       var checker, j, len, ref, resolution;
       resolution = this.prefixes.remove['@resolution'];
-      css.eachAtRule((function(_this) {
+      css.walkAtRules((function(_this) {
         return function(rule, i) {
           if (_this.prefixes.remove['@' + rule.name]) {
             if (!_this.disabled(rule)) {
@@ -3352,7 +3353,7 @@
       ref = this.prefixes.remove.selectors;
       for (j = 0, len = ref.length; j < len; j++) {
         checker = ref[j];
-        css.eachRule((function(_this) {
+        css.walkRules((function(_this) {
           return function(rule, i) {
             if (checker.check(rule)) {
               if (!_this.disabled(rule)) {
@@ -3362,7 +3363,7 @@
           };
         })(this));
       }
-      return css.eachDecl((function(_this) {
+      return css.walkDecls((function(_this) {
         return function(decl, i) {
           var k, len1, notHack, ref1, ref2, rule, unprefixed;
           if (_this.disabled(decl)) {
@@ -3375,7 +3376,7 @@
               return other.prop === unprefixed;
             });
             if (notHack && !_this.withHackValue(decl)) {
-              if (decl.style('before').indexOf("\n") > -1) {
+              if (decl.raw('before').indexOf("\n") > -1) {
                 _this.reduceSpaces(decl);
               }
               rule.remove(i);
@@ -3440,19 +3441,19 @@
       if (stop) {
         return;
       }
-      parts = decl.style('before').split("\n");
+      parts = decl.raw('before').split("\n");
       prevMin = parts[parts.length - 1].length;
       diff = false;
       return this.prefixes.group(decl).down(function(other) {
         var last;
-        parts = other.style('before').split("\n");
+        parts = other.raw('before').split("\n");
         last = parts.length - 1;
         if (parts[last].length > prevMin) {
           if (diff === false) {
             diff = parts[last].length - prevMin;
           }
           parts[last] = parts[last].slice(0, -diff);
-          return other.before = parts.join("\n");
+          return other.raws.before = parts.join("\n");
         }
       });
     };
@@ -3946,7 +3947,7 @@
     Value.prototype.add = function(decl, prefix) {
       var ref, value;
       decl._autoprefixerValues || (decl._autoprefixerValues = {});
-      value = decl._autoprefixerValues[prefix] || ((ref = decl._value) != null ? ref.raw : void 0) || decl.value;
+      value = decl._autoprefixerValues[prefix] || ((ref = decl.raws.value) != null ? ref.raw : void 0) || decl.value;
       value = this.replace(value, prefix);
       if (value) {
         return decl._autoprefixerValues[prefix] = value;
@@ -15893,7 +15894,7 @@ var AtRule = (function (_Container) {
         if (this.nodes) {
             this.stringifyBlock(builder, name + params);
         } else {
-            var before = this.style('before');
+            var before = this.raw('before');
             if (before) builder(before);
             var end = (this.between || '') + (semicolon ? ';' : '');
             builder(name + params + end, this);
@@ -15951,10 +15952,10 @@ var Comment = (function (_Node) {
     _inherits(Comment, _Node);
 
     Comment.prototype.stringify = function stringify(builder) {
-        var before = this.style('before');
+        var before = this.raw('before');
         if (before) builder(before);
-        var left = this.style('left', 'commentLeft');
-        var right = this.style('right', 'commentRight');
+        var left = this.raw('left', 'commentLeft');
+        var right = this.raw('right', 'commentRight');
         builder('/*' + left + this.text + right + '*/', this);
     };
 
@@ -16009,25 +16010,25 @@ var Container = (function (_Node) {
             last -= 1;
         }
 
-        var semicolon = this.style('semicolon');
+        var semicolon = this.raw('semicolon');
         for (i = 0; i < this.nodes.length; i++) {
             this.nodes[i].stringify(builder, last !== i || semicolon);
         }
     };
 
     Container.prototype.stringifyBlock = function stringifyBlock(builder, start) {
-        var before = this.style('before');
+        var before = this.raw('before');
         if (before) builder(before);
 
-        var between = this.style('between', 'beforeOpen');
+        var between = this.raw('between', 'beforeOpen');
         builder(start + between + '{', this, 'start');
 
         var after = undefined;
         if (this.nodes && this.nodes.length) {
             this.stringifyContent(builder);
-            after = this.style('after');
+            after = this.raw('after');
         } else {
-            after = this.style('after', 'emptyBody');
+            after = this.raw('after', 'emptyBody');
         }
 
         if (after) builder(after);
@@ -16077,7 +16078,7 @@ var Container = (function (_Node) {
         });
     };
 
-    Container.prototype.eachDecl = function eachDecl(prop, callback) {
+    Container.prototype.walkDecls = function walkDecls(prop, callback) {
         if (!callback) {
             callback = prop;
             return this.eachInside(function (child, i) {
@@ -16103,7 +16104,7 @@ var Container = (function (_Node) {
         }
     };
 
-    Container.prototype.eachRule = function eachRule(callback) {
+    Container.prototype.walkRules = function walkRules(callback) {
         return this.eachInside(function (child, i) {
             if (child.type === 'rule') {
                 var result = callback(child, i);
@@ -16112,7 +16113,7 @@ var Container = (function (_Node) {
         });
     };
 
-    Container.prototype.eachAtRule = function eachAtRule(name, callback) {
+    Container.prototype.walkAtRules = function walkAtRules(name, callback) {
         if (!callback) {
             callback = name;
             return this.eachInside(function (child, i) {
@@ -16289,7 +16290,7 @@ var Container = (function (_Node) {
             opts = {};
         }
 
-        this.eachDecl(function (decl) {
+        this.walkDecls(function (decl) {
             if (opts.props && opts.props.indexOf(decl.prop) === -1) return;
             if (opts.fast && decl.value.indexOf(opts.fast) === -1) return;
 
@@ -16346,9 +16347,9 @@ var Container = (function (_Node) {
 
         var processed = nodes.map(function (child) {
             if (child.parent) child = child.clone();
-            if (typeof child.before === 'undefined') {
-                if (sample && typeof sample.before !== 'undefined') {
-                    child.before = sample.before.replace(/[^\s]/g, '');
+            if (typeof child.raws.before === 'undefined') {
+                if (sample && typeof sample.raws.before !== 'undefined') {
+                    child.raws.before = sample.raws.before.replace(/[^\s]/g, '');
                 }
             }
             child.parent = _this;
@@ -16507,10 +16508,10 @@ var Declaration = (function (_Node) {
     _inherits(Declaration, _Node);
 
     Declaration.prototype.stringify = function stringify(builder, semicolon) {
-        var before = this.style('before');
+        var before = this.raw('before');
         if (before) builder(before);
 
-        var between = this.style('between', 'colon');
+        var between = this.raw('between', 'colon');
         var string = this.prop + between + this.stringifyRaw('value');
 
         if (this.important) {
@@ -17477,8 +17478,8 @@ var _default = (function () {
             root.eachInside(function (i) {
                 var p = i.parent;
                 if (p && p !== root && p.parent && p.parent === root) {
-                    if (typeof i.before !== 'undefined') {
-                        var parts = i.before.split('\n');
+                    if (typeof i.raws.before !== 'undefined') {
+                        var parts = i.raws.before.split('\n');
                         value = parts[parts.length - 1];
                         value = value.replace(/[^\s]/g, '');
                         return false;
@@ -17487,8 +17488,8 @@ var _default = (function () {
             });
         } else if (detect === 'beforeComment') {
             root.eachComment(function (i) {
-                if (typeof i.before !== 'undefined') {
-                    value = i.before;
+                if (typeof i.raws.before !== 'undefined') {
+                    value = i.raws.before;
                     if (value.indexOf('\n') !== -1) {
                         value = value.replace(/[^\n]+$/, '');
                     }
@@ -17496,12 +17497,12 @@ var _default = (function () {
                 }
             });
             if (typeof value === 'undefined') {
-                value = this.style(null, 'beforeDecl');
+                value = this.raw(null, 'beforeDecl');
             }
         } else if (detect === 'beforeDecl') {
-            root.eachDecl(function (i) {
-                if (typeof i.before !== 'undefined') {
-                    value = i.before;
+            root.walkDecls(function (i) {
+                if (typeof i.raws.before !== 'undefined') {
+                    value = i.raws.before;
                     if (value.indexOf('\n') !== -1) {
                         value = value.replace(/[^\n]+$/, '');
                     }
@@ -17509,13 +17510,13 @@ var _default = (function () {
                 }
             });
             if (typeof value === 'undefined') {
-                value = this.style(null, 'beforeRule');
+                value = this.raw(null, 'beforeRule');
             }
         } else if (detect === 'beforeRule') {
             root.eachInside(function (i) {
                 if (i.nodes && (i.parent !== root || root.first !== i)) {
-                    if (typeof i.before !== 'undefined') {
-                        value = i.before;
+                    if (typeof i.raws.before !== 'undefined') {
+                        value = i.raws.before;
                         if (value.indexOf('\n') !== -1) {
                             value = value.replace(/[^\n]+$/, '');
                         }
@@ -17537,13 +17538,13 @@ var _default = (function () {
             });
         } else if (detect === 'before' || detect === 'after') {
             if (this.type === 'decl') {
-                value = this.style(null, 'beforeDecl');
+                value = this.raw(null, 'beforeDecl');
             } else if (this.type === 'comment') {
-                value = this.style(null, 'beforeComment');
+                value = this.raw(null, 'beforeComment');
             } else if (detect === 'before') {
-                value = this.style(null, 'beforeRule');
+                value = this.raw(null, 'beforeRule');
             } else {
-                value = this.style(null, 'beforeClose');
+                value = this.raw(null, 'beforeClose');
             }
 
             var node = this.parent;
@@ -17554,7 +17555,7 @@ var _default = (function () {
             }
 
             if (value.indexOf('\n') !== -1) {
-                var indent = this.style(null, 'indent');
+                var indent = this.raw(null, 'indent');
                 if (indent.length) {
                     for (var step = 0; step < depth; step++) {
                         value += indent;
@@ -17564,7 +17565,7 @@ var _default = (function () {
 
             return value;
         } else if (detect === 'colon') {
-            root.eachDecl(function (i) {
+            root.walkDecls(function (i) {
                 if (typeof i.between !== 'undefined') {
                     value = i.between.replace(/[^\s:]/g, '');
                     return false;
@@ -17597,7 +17598,7 @@ var _default = (function () {
     };
 
     _class.prototype.cleanStyles = function cleanStyles(keepBetween) {
-        delete this.before;
+        delete this.raws.before;
         delete this.after;
         if (!keepBetween) delete this.between;
 
@@ -17877,7 +17878,7 @@ var Parser = (function () {
         }
 
         while (tokens[0][0] !== 'word') {
-            node.before += tokens.shift()[1];
+            node.raws.before += tokens.shift()[1];
         }
         node.source.start = { line: tokens[0][2], column: tokens[0][3] };
 
@@ -17899,7 +17900,7 @@ var Parser = (function () {
         }
 
         if (node.prop[0] === '_' || node.prop[0] === '*') {
-            node.before += node.prop[0];
+            node.raws.before += node.prop[0];
             node.prop = node.prop.slice(1);
         }
         node.between += this.spacesFromStart(tokens);
@@ -18040,7 +18041,7 @@ var Parser = (function () {
     Parser.prototype.unknownWord = function unknownWord(node, token) {
         if (this.input.safe) {
             node.source.start = { line: token[2], column: token[3] };
-            node.before += node.prop + node.between;
+            node.raws.before += node.prop + node.between;
             node.prop = token[1];
             node.between = '';
         } else {
@@ -18112,7 +18113,7 @@ var Parser = (function () {
         this.current.push(node);
 
         node.source = { start: { line: line, column: column }, input: this.input };
-        node.before = this.spaces;
+        node.raws.before = this.spaces;
         this.spaces = '';
         if (node.type !== 'comment') this.semicolon = false;
     };
@@ -18556,7 +18557,7 @@ var Root = (function (_Container) {
         child = this.index(child);
 
         if (child === 0 && this.nodes.length > 1) {
-            this.nodes[1].before = this.nodes[child].before;
+            this.nodes[1].raws.before = this.nodes[child].raws.before;
         }
 
         return _Container.prototype.remove.call(this, child);
@@ -18568,9 +18569,9 @@ var Root = (function (_Container) {
         if (sample) {
             if (type === 'prepend') {
                 if (this.nodes.length > 1) {
-                    sample.before = this.nodes[1].before;
+                    sample.raws.before = this.nodes[1].raws.before;
                 } else {
-                    delete sample.before;
+                    delete sample.raws.before;
                 }
             } else {
                 for (var _iterator = nodes, _isArray = Array.isArray(_iterator), _i = 0, _iterator = _isArray ? _iterator : _iterator[Symbol.iterator]();;) {
@@ -18587,7 +18588,7 @@ var Root = (function (_Container) {
 
                     var node = _ref;
 
-                    if (this.first !== sample) node.before = sample.before;
+                    if (this.first !== sample) node.raws.before = sample.raws.before;
                 }
             }
         }
