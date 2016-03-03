@@ -3,7 +3,7 @@
   "main": "index",
   "format": "es6",
     "registry": "npm",
-    "jspmNodeConversion": false
+    "jspmNodeConversion": false,
   "version": "1.0.7",
   "description": "A CSS Modules + PostCSS plugin loader for JSPM.",
   "dependencies": {
