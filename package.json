@@ -2,9 +2,7 @@
   "name": "jspm-loader-css",
   "main": "index",
   "format": "es6",
-  "version": "1.0.2",
-    "registry": "npm",
-    "jspmNodeConversion": false,
+  "version": "1.0.3",
   "description": "A CSS Modules + PostCSS plugin loader for JSPM.",
   "dependencies": {
     "css-modules-loader-core": "^1.0.0-beta2",
@@ -35,4 +33,8 @@
     "url": "https://github.com/geelen/jspm-loader-css/issues"
   },
   "homepage": "https://github.com/geelen/jspm-loader-css"
+  "jspm": {
+    "registry": "npm",
+    "jspmNodeConversion": false
+  }
 }
