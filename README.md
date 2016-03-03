@@ -2,13 +2,12 @@
 
 [![Join the chat at https://gitter.im/geelen/jspm-loader-css](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/geelen/jspm-loader-css?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
+## Install
+
+`jspm install css=github:mnichols/jspm-loader-css`
+
+
 An extensible CSS loader for JSPM.
-
-Install the plugin and name it `css` locally
-
-```
-jspm install css=npm:jspm-loader-css
-```
 
 Load the styles by referencing them in your JS:
 
