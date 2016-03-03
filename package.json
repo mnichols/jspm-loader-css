@@ -3,22 +3,19 @@
   "main": "index",
   "format": "es6",
   "version": "1.0.2",
-  "description": "A CSS loader for JSPM. Install",
+  "description": "A CSS Modules + PostCSS plugin loader for JSPM.",
   "dependencies": {
     "css-modules-loader-core": "^1.0.0-beta2",
-    "debounce": "^1.0.0",
-    "path": "^0.12.7",
-    "toposort": "^0.2.12"
+    "cssnano": "^3.5.2",
+    "path": "^0.12.7"
   },
   "devDependencies": {
-    "babel-eslint": "^4.1.3",
-    "eslint": "^1.5.0",
-    "eslint-config-standard": "^4.4.0",
-    "eslint-plugin-standard": "^1.3.1"
+    "babel-eslint": "^4.1.8",
+    "eslint": "^1.10.3"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint index.js lib"
+    "pretest": "eslint index.js lib",
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
