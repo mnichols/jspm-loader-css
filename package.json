@@ -4,7 +4,7 @@
   "format": "es6",
     "registry": "npm",
     "jspmNodeConversion": false,
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "A CSS Modules + PostCSS plugin loader for JSPM.",
   "dependencies": {
     "css-modules-loader-core": "^1.0.0-beta2",
